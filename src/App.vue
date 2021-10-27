@@ -88,11 +88,11 @@
                       v-model="dialog"
                       width="500"
                     >
-                      <template v-slot:activator="{ on, attrs }">
+                      <template v-slot:activator="{ on }">
                         <v-btn
                           color="error"
                           dark
-                          v-bind="attrs"
+                          
                           v-on="on"
                           @click="setCurrentNote(noteIndex)"
                           
