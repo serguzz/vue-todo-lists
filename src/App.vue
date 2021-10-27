@@ -138,6 +138,39 @@
               </v-list>
             </v-card>
           </v-col>
+          <v-col cols="4">
+            <v-card>
+              <v-list>
+                <v-list-item>
+                  <!--v-file-input
+                    accept="*"
+                    label="Notes file"
+                    placeholder="Choose a file with saved Notes"
+                    v-on:change="setFileVariable"
+                  >
+
+                  </v-file-input-->
+                  <input v-on:change="setFileVariable" class="mb-2" type="file">
+                </v-list-item>
+                <v-list-item>
+                  <v-spacer/>
+                  <v-btn width="170" color="orange"
+                      title="Save your Notes"
+                      v-on:click="importNotesFromFile()">
+                          Import Notes
+                  </v-btn>
+                </v-list-item>
+                <v-list-item>
+                  <v-spacer/>
+                  <v-btn width="170" color="orange"
+                      title="Save your Notes"
+                      v-on:click="exportNotesToFile()">
+                        Download Notes
+                  </v-btn>
+                </v-list-item>
+              </v-list>
+            </v-card>
+          </v-col>
 
       </v-row>
     </v-container>
@@ -194,8 +227,21 @@ export default {
     ],
     todoNotesBackup : [],
     newTodoItems: [],
-    currentNoteIndex: 0
+    currentNoteIndex: 0,
+    file: null
   }),
+
+  mounted() {
+    if (localStorage.jsonTodoNotes) {
+      this.todoNotes = JSON.parse( localStorage.jsonTodoNotes);
+    }
+  },
+
+  watch: {
+    todoNotes(newNotes) {
+      localStorage.jsonTodoNotes = JSON.stringify(newNotes);
+    }
+  },
 
   methods: {
 
@@ -263,6 +309,64 @@ export default {
           }
           return i;
       },
+
+      // set the file variable in Vue app to the value given in "input file" tag
+      setFileVariable : function(event){
+
+          if(event){
+              const fileForImport = event.srcElement.files[0];
+              // set the file variable in our Vue application
+              this.file = fileForImport;
+              console.log(this.file);
+          }
+      },      
+
+      importNotesFromFile() {
+
+        //console.log('uploading Notes from a file ...');
+        const fileReader = new FileReader();
+
+        // here we use arrow function to have appropriate context
+        fileReader.onload = (event) => {
+
+            let contents = event.target.result;
+            let jsonObj = JSON.parse(contents);
+            this.todoNotesBackup = this.todoNotes.slice();
+            this.todoNotes = jsonObj.slice();
+        }
+
+        // here context is not critical
+        fileReader.onerror = function(event) {
+            console.error("Файл не может быть прочитан! код " + event.target.error.code);
+        }
+
+        // if file variable is not NULL
+        if (this.file) {
+            fileReader.readAsText(this.file);
+        }
+      },
+      
+
+      // saves (downloads) all todo notes to a file 'todo_notes.json' in DownLoads folder 
+      exportNotesToFile() {
+
+        const data = JSON.stringify(this.todoNotes);
+        const file = new Blob([data], {type: 'application/json'});
+        if (window.navigator.msSaveOrOpenBlob) // IE10+
+            window.navigator.msSaveOrOpenBlob(file, 'todo_notes.json');
+        else { // Others
+            const a = document.createElement("a"),
+                    url = URL.createObjectURL(file);
+            a.href = url;
+            a.download = 'todo_notes.json';
+            document.body.appendChild(a);
+            a.click();
+            setTimeout(function() {
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);  
+            }, 0); 
+        }
+      }
       
   }
 };
