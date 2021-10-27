@@ -2,6 +2,7 @@
   <v-app>
     <Navbar
       @add_todo_note="addTodoNote()"
+      @undo_last_action="undoLastAction()"
     />
     <v-main style="scoped">
       
@@ -137,11 +138,6 @@
               </v-list>
             </v-card>
           </v-col>
-          
-
-
-
-
 
       </v-row>
     </v-container>
@@ -232,8 +228,11 @@ export default {
           this.todoNotes[noteIndex].splice(itemIndex , 1);
       },
 
-      alertNewTodo(){
-        console.log(this.newTodoItems);
+      // cancels last action - uses backup variable "todoListsBackup"
+      undoLastAction(){
+          if (this.todoNotesBackup.length > 0) {
+              this.todoNotes = this.todoNotesBackup.slice();
+          }
       },
 
             // adds new TODO Item from the related input to the TODO Note

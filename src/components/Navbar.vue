@@ -33,7 +33,7 @@
             <v-spacer/>
             <v-btn class="orange mr-1" @click="addTodoNote();">New Note
             </v-btn>
-            <v-btn class="orange mr-1">Undo Action
+            <v-btn class="orange mr-1" @click="undoLastAction();">Undo Action
             </v-btn>
             <v-btn class="orange mr-1">Export Notes
             </v-btn>
@@ -58,7 +58,12 @@ export default ({
     methods: {
         addTodoNote(){
             this.$emit('add_todo_note')
+        },
+
+        undoLastAction(){
+          this.$emit('undo_last_action')
         }
+
     }
 
     
