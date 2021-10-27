@@ -51,6 +51,7 @@
                         {{" You have " + countOpenTasks(noteIndex) + " tasks to do."}}
                     </div>
               </v-card-subtitle>
+              <v-divider/>
               <v-list>
                 <v-list-item
                   v-for="(todoItem, itemIndex) in todoNote"
@@ -138,8 +139,16 @@
               </v-list>
             </v-card>
           </v-col>
+          <v-spacer/>
           <v-col cols="4">
-            <v-card>
+
+            <v-card elevation="20"
+                    
+                    height="450">
+              <v-card-title>
+                Upload / Download / Create
+              </v-card-title>
+              <v-divider/>      
               <v-list>
                 <v-list-item>
                   <!--v-file-input
@@ -150,24 +159,54 @@
                   >
 
                   </v-file-input-->
+                  <v-spacer/>
                   <input v-on:change="setFileVariable" class="mb-2" type="file">
                 </v-list-item>
                 <v-list-item>
                   <v-spacer/>
-                  <v-btn width="170" color="orange"
+                  <v-btn width="200" color="orange"
                       title="Save your Notes"
                       v-on:click="importNotesFromFile()">
-                          Import Notes
+                          Import from File
                   </v-btn>
                 </v-list-item>
                 <v-list-item>
                   <v-spacer/>
-                  <v-btn width="170" color="orange"
+                  <v-btn width="200" color="orange"
                       title="Save your Notes"
                       v-on:click="exportNotesToFile()">
-                        Download Notes
+                        Export to File
                   </v-btn>
                 </v-list-item>
+
+                <v-list-item>
+                  <v-spacer/>
+                  <v-btn width="200" color="orange"
+                      title="test"
+                      v-on:click="importNotesFromLocalStorage()">
+                          Import from Storage
+                  </v-btn>
+                </v-list-item>
+                <v-list-item>
+                  <v-spacer/>
+                  <v-btn width="200" color="orange"
+                      title="Save your Notes"
+                      v-on:click="exportNotesToLocalStorage()">
+                          Export to Storage
+                  </v-btn>
+                </v-list-item>
+                <v-list-item>
+                  <v-spacer/>
+                  <v-btn width="200" class="orange mr-1" @click="addTodoNote();">New Note
+                  </v-btn>
+                </v-list-item>
+
+                <v-list-item>
+                  <v-spacer/>
+                  <v-btn width="200" class="orange mr-1" @click="undoLastAction();">Undo Action
+                  </v-btn>
+                </v-list-item>
+
               </v-list>
             </v-card>
           </v-col>
@@ -238,9 +277,9 @@ export default {
   },
 
   watch: {
-    todoNotes(newNotes) {
-      localStorage.jsonTodoNotes = JSON.stringify(newNotes);
-    }
+    // todoNotes(newNotes) {
+    //   localStorage.jsonTodoNotes = JSON.stringify(newNotes);
+    // }
   },
 
   methods: {
@@ -366,6 +405,18 @@ export default {
                 window.URL.revokeObjectURL(url);  
             }, 0); 
         }
+      },
+
+      importNotesFromLocalStorage(){
+        if (localStorage.jsonTodoNotes) {
+          this.todoNotes = JSON.parse( localStorage.jsonTodoNotes);
+        }
+
+      },
+
+      exportNotesToLocalStorage(){
+        localStorage.jsonTodoNotes = JSON.stringify(this.todoNotes);
+
       }
       
   }

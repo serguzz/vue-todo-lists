@@ -19,6 +19,7 @@
         <v-app-bar-nav-icon></v-app-bar-nav-icon>
   
         <v-app-bar-title>Todo Notes</v-app-bar-title>
+      
   
         <v-spacer></v-spacer>
   
@@ -35,14 +36,9 @@
             </v-btn>
             <v-btn class="orange mr-1" @click="undoLastAction();">Undo Action
             </v-btn>
-            <v-btn class="orange mr-1">Export Notes
-            </v-btn>
-            <v-btn class="orange mr-1">Import Notes
-            </v-btn>
+
           </v-tabs>
         </template>
- 
-
       </v-app-bar>
 
     
