@@ -233,8 +233,9 @@ export default {
     //
     dialog: false,
 
-    todoNotes: [
-             [          
+    todoNotes: 
+      [
+          [          
               { 
                 value: '1.1 Implement Calculator App',
                 isDone: true,
@@ -263,7 +264,7 @@ export default {
               }
           ]
    
-    ],
+      ],
     todoNotesBackup : [],
     newTodoItems: [],
     currentNoteIndex: 0,
@@ -337,7 +338,7 @@ export default {
           //console.log(bool);
       },
 
-            // returns the number of NOT DONE tasks in the todoList
+      // returns the number of NOT DONE tasks in the todoList
       countOpenTasks (noteIndex){
           
           let i = 0;
@@ -356,10 +357,36 @@ export default {
               const fileForImport = event.srcElement.files[0];
               // set the file variable in our Vue application
               this.file = fileForImport;
-              console.log(this.file);
+              // console.log(this.file);
           }
       },      
 
+
+      isValidTodoNotesList(jsonObj){
+
+          if (!jsonObj)
+            return false;
+
+          if (!Array.isArray(jsonObj)) return false
+
+          for (let i = 0; i < jsonObj.length; i++) {
+
+              if (!Array.isArray(jsonObj[i])) return false
+              
+              for (let j = 0; j < jsonObj[i].length; j++) {
+                  
+                  if (!Object.prototype.hasOwnProperty.call(jsonObj[i][j], 'value')) {return false}
+                      else if ((typeof jsonObj[i][j].value) !== "string") {return false}
+                  
+                  if (!Object.prototype.hasOwnProperty.call(jsonObj[i][j], 'isDone')) return false
+                      else if ((typeof jsonObj[i][j].isDone) !== "boolean") {return false}
+              }
+          }
+          
+          return true
+      },
+
+      // imports notes, specified in this.file variable
       importNotesFromFile() {
 
         //console.log('uploading Notes from a file ...');
@@ -369,9 +396,19 @@ export default {
         fileReader.onload = (event) => {
 
             let contents = event.target.result;
-            let jsonObj = JSON.parse(contents);
-            this.todoNotesBackup = this.todoNotes.slice();
-            this.todoNotes = jsonObj.slice();
+            
+            try {
+
+              let jsonObj = JSON.parse(contents);
+              if (this.isValidTodoNotesList(jsonObj)) {
+                // save jsonObj to this.todoNotes .
+                this.todoNotesBackup = this.todoNotes.slice();
+                this.todoNotes = jsonObj.slice();
+              } else 
+                  alert("The imported file import is NOT VALID !! Choose another file.")            
+            } catch (error) {
+              alert("\nError when parsing JSON file: \n" + error + "\n\nImport only from JSON files!")
+            }
         }
 
         // here context is not critical
@@ -381,10 +418,12 @@ export default {
 
         // if file variable is not NULL
         if (this.file) {
+
             fileReader.readAsText(this.file);
         }
       },
       
+
 
       // saves (downloads) all todo notes to a file 'todo_notes.json' in DownLoads folder 
       exportNotesToFile() {
